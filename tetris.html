@@ -14,36 +14,56 @@
       height:100%; 
       overflow:hidden;
     }
+
+    .scoreHeader {
+      font-size: 30px;
+    }
+
+    .scoreField {
+      border: 0px;
+      font-size: 30px;
+      width: 100%;
+      background-color: #CCFFFF;
+    }
+
+    .playButton {
+      font-size: 25px;
+      letter-spacing: 0.3em;
+      font-weight: bold;
+      width: 49%;
+      height: 75px;
+    }
   </style>
 </head>
 
 <body>
 
-<table style="border: 0px;">
+<table border="0">
 <tr><td rowspan="2">
+
   <canvas id="canvas" width="250" height="425" style="border: 2px solid;"></canvas>
-</td><td align="center">
-<form id="scoreBoard">
 
-<p>
-Score:<br>
-<input type="text" id="score" />
-</p>
+</td><td valign="top" width="150">
 
-<p>
-Lines:<br>
-<input type="text" id="lines" />
-</p>
+  <form id="scoreBoard" style="margin-top: 0; margin-bottom: 0;" class="scoreHeader">
 
-<p>
-Level:<br>
-<input type="text" id="level" />
-</p>
+    Score:<br><input type="text" id="score" class="scoreField" /><br><br>
+    Lines:<br><input type="text" id="lines" class="scoreField" /><br><br>
+    Level:<br><input type="text" id="level" class="scoreField" />
 
-</form>
+  </form>
+
 </td></tr>
-<tr><td>
+<tr><td valign="bottom">
+
   <canvas id="canvasPreview" width="150" height="100" style="border: 2px solid;"></canvas>
+
+</td></tr>
+<tr><td colspan="2" align="center">
+  <input type="button" value="LEFT" class="playButton" onclick="game.move(-1, 0);" />
+  <input type="button" value="RIGHT" class="playButton" onclick="game.move(1, 0);" /><br>
+  <input type="button" value="ROTATE" class="playButton" onclick="game.rotate();" />
+  <input type="button" value="DROP" class="playButton" onclick="game.move(0, 1);" />
 </td></tr>
 </table>
 
@@ -52,30 +72,14 @@ Level:<br>
 
 <script type="text/javascript">
 
-var CELL_SIZE = 25;
-var INTERVAL = 25; // milliseconds
-
-var canvas = document.getElementById('canvas');
-var canvasPreview = document.getElementById('canvasPreview');
+var ctx = document.getElementById('canvas').getContext('2d');
+var ctxPreview = document.getElementById('canvasPreview').getContext('2d');
 var scoreBoard = document.getElementById('scoreBoard');
-
-var ctx = canvas.getContext('2d');
-var ctxPreview = canvasPreview.getContext('2d');
-
-function clearGrid(width, height, canvasCtx) {
-  canvasCtx.fillStyle = "#FFCCCC";
-  canvasCtx.fillRect(0, 0, width * CELL_SIZE, height * CELL_SIZE);
-}
-
-function drawCell(x, y, color, canvasCtx) {
-  canvasCtx.fillStyle = color;
-  canvasCtx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-}
-
-window.addEventListener("keydown", doKeyDown, true);
 
 var game = new Tetris(ctx, ctxPreview, scoreBoard);
 game.run();
+
+window.addEventListener("keydown", doKeyDown, true);
 
 function doKeyDown(event) {
   switch( event.keyCode ) {
@@ -93,9 +97,6 @@ function doKeyDown(event) {
 
     case 32:
       game.rotate();
-      break;
-
-    default:
       break;
     }
 }

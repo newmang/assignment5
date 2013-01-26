@@ -1,11 +1,10 @@
 function Tetris(canvas, canvasPreview, scoreBoard){
+  this.cellSize = 25;
   this.interval = 600;	// milliseconds
   this.width = 10;
   this.height = 17;
   this.canvas = canvas;
-
   this.nextPiece = 0;
-
   this.prevWidth = 6;
   this.prevHeight = 4;
   this.canvasPreview = canvasPreview;
@@ -13,23 +12,33 @@ function Tetris(canvas, canvasPreview, scoreBoard){
   this.score = 0;
   this.level = 0;
   this.lines = 0;
+  this.timeHandle = null;
 
   // initialize the dead cell matrix (width X height)
   this.deadCells = new Array(this.width);
-  for( var i = 0; i<this.deadCells.length; i++ )
+  for( var i = 0; i<this.deadCells.length; i++ ) {
     this.deadCells[i] = new Array(this.height);
+  }
+}
 
-  this.timeHandle = null;
+Tetris.prototype.drawCell = function(x, y, color, canvasCtx) {
+  canvasCtx.fillStyle = color;
+  canvasCtx.fillRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
+}
+
+Tetris.prototype.clearGrid = function(width, height, canvasCtx) {
+  canvasCtx.fillStyle = "#FFCCCC";
+  canvasCtx.fillRect(0, 0, width * this.cellSize, height * this.cellSize);
 }
 
 Tetris.prototype.draw = function() {
-  clearGrid(this.width, this.height, this.canvas);
+  this.clearGrid(this.width, this.height, this.canvas);
 
   // draw all dead cells
   for( var i = 0; i<this.deadCells.length; i++ ) {
       for( var j = 0; j<this.deadCells[i].length; j++ ) {
         if( this.deadCells[i][j] ) {
-          drawCell(i, j, this.deadCells[i][j], this.canvas);
+          this.drawCell(i, j, this.deadCells[i][j], this.canvas);
         }
       }
   }
@@ -45,15 +54,15 @@ Tetris.prototype.drawScore = function() {
 }
 
 Tetris.prototype.checkLines = function() {
-
   var lines = new Array();
   for( var i = 0; i<this.deadCells[0].length; i++ ) {
     for( var j = 0; j<this.deadCells.length; j++ ) {
       if( !this.deadCells[j][i] ) {
         break;
       }
-      else if( j == this.deadCells.length-1 )
+      else if( j == this.deadCells.length-1 ) {
         lines.push(i);
+      }
     }
   }
 
@@ -73,11 +82,11 @@ Tetris.prototype.checkLines = function() {
     this.lines += linesWon;
 
     // make the game go faster every once in a while
-    if( this.lines > (this.level+1)*(this.level+1)*20 ) {
+    if( this.score > (this.level+1)*(this.level+1)*20 ) {
       ++this.level;
 
       clearInterval(this.timeHandle);
-      this.interval = this.interval - (this.interval/6);
+      this.interval = this.interval - (this.interval/4);
 
       var _this = this;
       this.timeHandle = setInterval(function(){ _this.tick(); }, this.interval);
@@ -97,7 +106,7 @@ Tetris.prototype.gameOver = function() {
 
 Tetris.prototype.chooseNextPiece = function() {
   this.nextPiece = this.randomBlock();
-  clearGrid(this.prevWidth, this.prevHeight, this.canvasPreview);
+  this.clearGrid(this.prevWidth, this.prevHeight, this.canvasPreview);
 
   var previewBlock = new Block(this.nextPiece);
   previewBlock.x = 2;

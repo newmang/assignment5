@@ -71,7 +71,7 @@ Block.prototype.draw = function(tetris, canvas) {
     var y = this.y + this.cells[this.r][i][1];
     var x = this.x + this.cells[this.r][i][0];
     if( x>= 0 && x < tetris.width && y >= 0 && y < tetris.height )
-      drawCell(x, y, this.color, canvas);
+      tetris.drawCell(x, y, this.color, canvas);
   }
 };
 
